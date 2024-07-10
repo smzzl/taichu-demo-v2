@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <link rel="stylesheet" type="text/css" href="./static/css/style.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div>
+            <h1>taichu-mllm</h1>
+            <p>Explore taichu</p>
+            <select id="model-select" onchange="selectModel()">
+                <option value="100B">100 B</option>
+                <option value="70B">70 B</option>
+                <option value="7B">7 B</option>
+            </select>
+        </div>
+        <div>
+            <p>learn more</p>
+        </div>
+    </div>
+    <div class="main-content">
+        <div class="chat-window" id="chat-window">
+            <!-- Chat messages will be appended here -->
+        </div>
+        <div class="input-section">
+            <label for="file-input">
+                <img src="./static/images/attachment_uploader.png" alt="Attachment">
+            </label>
+            <input type="file" id="file-input">
+            <textarea type="text" id="message-input" placeholder="Type a message" oninput="adjustInputHeight(this)"></textarea>
+            <button onclick="sendMessage()">Send</button>
+            <div class="record-button" onclick="toggleRecording()", style="background-color: rgb(52, 152, 219);">🎤</div>
+        </div>
+    </div>
+    <script src="./static/js/script.js"></script>
+    <script>
+
+    </script>
+</body>
+</html>

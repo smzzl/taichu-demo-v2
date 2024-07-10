@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>自适应文本输入窗口</title>
+<style>
+  .textarea-container {
+    width: 300px; /* 容器宽度可以根据需要调整 */
+    border: 1px solid #ccc; /* 边框样式 */
+    padding: 5px; /* 内边距 */
+    position: relative; /* 相对定位 */
+    
+    max-height: 100px; /* Maximum height equivalent to 5 lines */
+  }
+
+  .textarea-container textarea {
+    width: 100%; /* 宽度占满容器 */
+    height: 50px; /* 初始高度 */
+    resize: none; /* 禁止用户调整大小 */
+    padding: 5px; /* 内边距 */
+    box-sizing: border-box; /* 边框计算在宽度内 */
+    max-height: 100px; /* Maximum height equivalent to 5 lines */
+  }
+
+  .textarea-container textarea:focus {
+    outline: none; /* 去除聚焦时的轮廓 */
+  }
+</style>
+</head>
+<body>
+
+<div class="textarea-container">
+  <textarea placeholder="在这里输入文本..."></textarea>
+</div>
+
+<script>
+  // 监听文本输入框的输入事件
+  document.querySelector('.textarea-container textarea').addEventListener('input', function() {
+    // 计算输入内容的高度
+    this.style.height = 'auto';
+    this.style.height = this.scrollHeight + 'px';
+  });
+
+let allAudioControls = []; // 全局数组存储所有音频控件
+
+function sendToServer(message, attachment, attachmentType) {
+    fetch('/send_message', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: message, attachment: attachment, attachment_type: attachmentType })
+    })
+    .then(response => response.json())
+    .then(data => {
+        let chatWindow = document.getElementById('chat-window');
+        chatWindow.innerHTML = '';
+        data.chat_history.forEach(chat => {
+            let chatMessage = document.createElement('div');
+            chatMessage.classList.add('chat-message');
+            chatMessage.classList.add(chat.sender.toLowerCase());
+
+            let avatar = document.createElement('img');
+            avatar.classList.add('avatar');
+            avatar.src = chat.sender === 'User' ? './static/images/user_avatar.png' : './static/images/bot_avatar.png'; // 请替换为实际头像路径
+            chatMessage.appendChild(avatar);
+
+            let content = document.createElement('div');
+            content.textContent = chat.content;
+            chatMessage.appendChild(content);
+
+            if (chat.audio) {
+                let playButton = document.createElement('span');
+                playButton.textContent = ' ▶';
+                playButton.style.cursor = 'pointer';
+                playButton.style.color = '#3498db';
+                playButton.style.marginLeft = '10px';
+
+                let audioControl = document.createElement('audio');
+                audioControl.src = chat.audio;
+                allAudioControls.push((audioControl, playButton)); // 将音频控件添加到全局数组
+                console.log(allAudioControls.length());
+
+                playButton.onclick = () => {
+                    if (audioControl.paused) {
+                        allAudioControls.forEach(audio => {
+                              audio[0].pause();
+                              // audio[1].textContent = ' ▶'; // 重置其他按钮的文本
+                        });
+                        audioControl.play();
+                        playButton.textContent = ' ⏸';
+                    } else {
+                        audioControl.pause();
+                        playButton.textContent = ' ▶';
+                    }
+                };
+
+                content.appendChild(playButton);
+            }
+
+            chatWindow.appendChild(chatMessage);
+        });
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+        document.getElementById('message-input').value = '';
+        document.getElementById('file-input').value = '';
+        adjustInputHeight(document.getElementById('message-input'));
+    });
+}
+</script>
+
+</body>
+</html>
