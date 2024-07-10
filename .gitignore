@@ -1,0 +1,4 @@
+./asset
+./ChatTTS
+./config
+./static/audio/audio_response*.wav
