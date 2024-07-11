@@ -54,9 +54,14 @@ def send_message():
     return jsonify(chat_history=chat_history)
 
 import argparse
+from gevent import pywsgi  
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--host', type=str, default="127.0.0.1")
 
     args = parser.parse_args()
+    
     app.run(debug=True, host=args.host)
+    
+    # server = pywsgi.WSGIServer((args.host, 5000), app, )  
+    # server.serve_forever()
